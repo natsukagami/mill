@@ -1,15 +1,17 @@
 package mill.runner
-import mill.main.BuildInfo
 
 import java.io.{FileOutputStream, PrintStream}
 import java.util.Locale
 import scala.jdk.CollectionConverters._
 import scala.util.Properties
 import mill.java9rtexport.Export
-import mill.api.{DummyInputStream, internal}
-import mill.api.SystemStreams
+import mill.api.{DummyInputStream, MillException, internal, SystemStreams}
 import mill.bsp.{BspContext, BspServerResult}
+import mill.main.BuildInfo
 import mill.util.PrintLogger
+
+import java.lang.reflect.InvocationTargetException
+import scala.util.control.NonFatal
 
 @internal
 object MillMain {
@@ -57,7 +59,19 @@ object MillMain {
           userSpecifiedProperties0 = Map(),
           initialSystemProperties = sys.props.toMap
         )
-      finally {
+      catch {
+          case e: MillException =>
+          runnerStreams.err.println(e.getMessage())
+          (false, ())
+        case e: InvocationTargetException
+            if e.getCause != null && e.getCause.isInstanceOf[MillException] =>
+          runnerStreams.err.println(e.getCause.getMessage())
+          (false, ())
+        case NonFatal(e) =>
+          runnerStreams.err.println("An unexpected error occurred")
+          throw e
+          (false, ())
+      } finally {
         cleanupStreams.foreach(_.close())
       }
     System.exit(if (result) 0 else 1)
