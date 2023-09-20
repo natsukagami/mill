@@ -210,7 +210,8 @@ object MillMain {
                       logger = logger,
                       disableCallgraphInvalidation = config.disableCallgraphInvalidation.value,
                       needBuildSc = needBuildSc(config),
-                      requestedMetaLevel = config.metaLevel
+                      requestedMetaLevel = config.metaLevel,
+                      onlyDeps = config.onlyDeps.value
                     ).evaluate()
                   }
                 )
