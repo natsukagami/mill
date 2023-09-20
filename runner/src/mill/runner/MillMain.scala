@@ -60,7 +60,7 @@ object MillMain {
           initialSystemProperties = sys.props.toMap
         )
       catch {
-          case e: MillException =>
+        case e: MillException =>
           runnerStreams.err.println(e.getMessage())
           (false, ())
         case e: InvocationTargetException
