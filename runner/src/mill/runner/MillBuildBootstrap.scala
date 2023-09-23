@@ -222,7 +222,7 @@ class MillBuildBootstrap(
       rootModule,
       evaluator,
       Seq("{runClasspath,scriptImportGraph,methodCodeHashSignatures}"),
-      onlyDeps
+      onlyDeps = false
     ) match {
       case (Left(error), evalWatches, moduleWatches) =>
         val evalState = RunnerState.Frame(
@@ -422,7 +422,7 @@ object MillBuildBootstrap {
     getChildRootModule(rootModule0, depth, projectRoot)
   }
 
-  def getChildRootModule(rootModule0: RootModule, depth: Int, projectRoot: os.Path) = {
+  def getChildRootModule(rootModule0: RootModule, depth: Int, projectRoot: os.Path): Either[String, RootModule] = {
 
     val childRootModules: Seq[RootModule] = rootModule0
       .millInternal
